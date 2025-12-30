@@ -2,7 +2,9 @@ let video = document.querySelector("video");
 let recordBtnCont = document.querySelector(".record-btn-cont");
 let recordBtn = document.querySelector(".record-btn");
 let captureBtnCont = document.querySelector(".capture-btn-cont") ;
-let caputerBtn = document.querySelector(".capture-btn");
+let captureBtn = document.querySelector(".capture-btn");
+let pauseBtnCont = document.querySelector(".pause-btn-cont");
+let isPaused = false;
 let transparentColor = "transparent";
 
 let recordFlag = false;
@@ -63,12 +65,13 @@ captureBtnCont.addEventListener("click",(e)=>{
 
     let tool = canvas.getContext("2d");
     tool.drawImage(video,0,0,canvas.width,canvas.height);
-    //Filtering
     tool.fillStyle = transparentColor;
     tool.fillRect(0,0,canvas.width,canvas.height);
-    
+
     let imageURL = canvas.toDataURL("image/jpeg");
 
+    
+    //Filtering
 
     let a = document.createElement('a');
     a.href = imageURL;
@@ -81,6 +84,25 @@ captureBtnCont.addEventListener("click",(e)=>{
     },500);
 })
 
+pauseBtnCont.addEventListener("click", () => {
+    if (!recorder || recorder.state === "inactive") return;
+
+    if (!isPaused) {
+        recorder.pause();
+        pauseTimer();
+        pauseBtnCont.innerText = "▶"; // resume icon
+        isPaused = true;
+    } else {
+        recorder.resume();
+        resumeTimer();
+        pauseBtnCont.innerText = "⏸"; // pause icon
+        isPaused = false;
+    }
+});
+
+
+
+
 //filtering logic
 let filter = document.querySelector(".filter-layer");
 
@@ -92,26 +114,6 @@ allFilter.forEach((filterElem)=>{
         filter.style.backgroundColor = transparentColor;
     })
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 let timerID;
 let counter = 0;// Represents total seconds
@@ -155,6 +157,30 @@ function startTimer(){
 }
 function stopTimer(){
     clearInterval(timerID);
+    counter = 0;
     timer.innerText = "00:00:00";
     timer.style.display="none";
 }
+
+function pauseTimer() {
+    clearInterval(timerID);
+}
+
+function resumeTimer() {
+    timerID = setInterval(() => {
+        let totalSeconds = counter;
+
+        let hours = parseInt(totalSeconds / 3600);
+        totalSeconds %= 3600;
+        let minutes = parseInt(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+
+        hours = hours < 10 ? `0${hours}` : hours;
+        minutes = minutes < 10 ? `0${minutes}` : minutes;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+        timer.innerText = `${hours}:${minutes}:${seconds}`;
+        counter++;
+    }, 1000);
+}
+
