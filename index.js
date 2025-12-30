@@ -60,13 +60,14 @@ captureBtnCont.addEventListener("click",(e)=>{
     let canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    let imageURL = canvas.toDataURL("image/jpeg");
 
     let tool = canvas.getContext("2d");
     tool.drawImage(video,0,0,canvas.width,canvas.height);
     //Filtering
     tool.fillStyle = transparentColor;
     tool.fillRect(0,0,canvas.width,canvas.height);
+    
+    let imageURL = canvas.toDataURL("image/jpeg");
 
 
     let a = document.createElement('a');
